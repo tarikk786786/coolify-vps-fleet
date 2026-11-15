@@ -1,129 +1,110 @@
-# Coolify VPS Fleet Manager & GitHub Orchestrator
+# Coolify VPS Fleet Manager & Universal Mover
 
 [![CI/CD Fleet Deployment](https://github.com/tarikk786786/coolify-vps-fleet/actions/workflows/deploy-coolify.yml/badge.svg)](https://github.com/tarikk786786/coolify-vps-fleet/actions/workflows/deploy-coolify.yml)
 [![Vibe Coding Standard](https://img.shields.io/badge/Standard-Vibe%20Coding%20Blueprint-blue.svg)](docs/)
 [![Author](https://img.shields.io/badge/Author-tarikislam.in-green.svg)](https://tarikislam.in)
 
-Automated deployment engine and orchestration system for installing, maintaining, and connecting **Coolify (Self-Hosted Cloud PaaS)** across all your VPS servers (Oracle Cloud, Hetzner, Contabo, DigitalOcean, AWS) directly integrated with your GitHub account (`tarikk786786`).
+Automated deployment engine, multi-VPS orchestrator, and **Universal Resource Mover** for **Coolify (Self-Hosted Cloud PaaS)**. Built to be **100% relocatable and portable** — you can move this folder to any directory, drive, or machine, and move any application, database, or Docker volume between any VPS servers with zero downtime.
 
 ---
 
-## 🚀 Quick Start
-
-### 1. Interactive Desktop Launcher (1-Click on Windows)
-Simply double-click the launcher located at the workspace root:
-```
-c:\Users\tarik\Desktop\MY TOOLS\Run-CoolifyFleet.bat
-```
-This launches the interactive terminal menu where you can:
-- **Test SSH Connectivity & Latency** across all VPS nodes
-- **Install or Upgrade Coolify** across the entire fleet
-- **Add or Edit VPS Nodes** in `config/vps-fleet.json`
-- **1-Click Open Primary Coolify Dashboard** in your browser (`:8000`)
-- **Run Fleet Verification Tests**
+## ⚡ 100% Portable & Relocatable Architecture
+- **Zero Hardcoded Paths**: All scripts, batch files, and tools use dynamic relative path resolution (`%~dp0`, `$PSScriptRoot`, `os.path.dirname`).
+- **Move Anywhere**: You can copy or move `coolify-vps-fleet` to any drive (C:, D:, USB, or another machine) and double-click `Run.bat` — it immediately runs without re-configuration.
+- **Move Anything Between VPS**: Built-in migration engine to move live databases, Docker volumes, or complete Coolify control planes between servers.
 
 ---
 
-### 2. Instant 1-Liner on Any Individual VPS
-To install Coolify directly on any individual Linux VPS, SSH into your server and run:
+## 🚀 Quick Launch
+
+### 1. Interactive Desktop Launchers (Run from Anywhere)
+- From workspace root: [`Run-CoolifyFleet.bat`](file:///c:/Users/tarik/Desktop/MY%20TOOLS/Run-CoolifyFleet.bat)
+- From inside the project folder: [`Run.bat`](file:///c:/Users/tarik/Desktop/MY%20TOOLS/apps/coolify-vps-fleet/Run.bat)
+
+Both launchers open the interactive terminal control center:
+```
+[FLEET COMMAND OPTIONS]
+  [1] Test SSH Connectivity & Latency to All VPS Nodes
+  [2] Install / Upgrade Coolify on All VPS Nodes
+  [3] Open Primary Coolify Dashboard in Browser (:8000)
+  [4] Add New VPS Server Node to Fleet Config
+  [5] View GitHub App Integration Instructions (tarikk786786)
+  [6] Run Fleet Test Suite (Unit Tests & Schema Validation)
+  [7] UNIVERSAL MOVER: Migrate Any App, Database or Volume between VPS
+  [8] Snapshot Fleet: Export Full Backup to Portable Local Archive
+  [0] Exit
+```
+
+---
+
+## 📦 Universal Mover Engine (`scripts/move-resource.py`)
+
+### 1. Move a Docker Volume Between VPS Nodes
+Stream persistent data directly between servers over encrypted SSH:
 ```bash
-curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
-```
-Once installed, open `http://<YOUR_VPS_IP>:8000` to access the Coolify Control Panel.
-
----
-
-### 3. Multi-VPS Automated Fleet Deployment (Windows PowerShell)
-To deploy Coolify to multiple VPS servers simultaneously from your local machine:
-
-1. Configure your servers in `config/vps-fleet.json` (see `config/vps-fleet.example.json`).
-2. Run the PowerShell fleet runner:
-```powershell
-.\scripts\deploy-all-vps.ps1 -ConfigFile .\config\vps-fleet.json -SshKeyPath "$HOME\.ssh\id_rsa"
+python scripts/move-resource.py move-volume \
+  --src-ip 1.2.3.4 --src-vol my_data_vol \
+  --dst-ip 5.6.7.8 --dst-vol my_data_vol
 ```
 
----
+### 2. Move a Live Database
+Stream PostgreSQL / MySQL directly into the destination container:
+```bash
+python scripts/move-resource.py move-db \
+  --type postgres \
+  --src-ip 1.2.3.4 --container pg-db --db prod_db --db-user postgres --db-pass secret \
+  --dst-ip 5.6.7.8 --dst-container pg-db
+```
 
-### 4. Deploy via GitHub Actions CI/CD
-1. Add your SSH Private Key to your GitHub repository secrets:  
-   `Settings` -> `Secrets and variables` -> `Actions` -> `SSH_PRIVATE_KEY`.
-2. Commit your server list to `config/vps-fleet.json`.
-3. Go to `Actions` -> **Deploy Coolify to VPS Fleet** -> Click **Run workflow**.
+### 3. Move the Entire Coolify Control Plane to a New VPS
+Transfers all configuration, databases, registered apps, and SSH keys in one step:
+```bash
+python scripts/move-resource.py move-coolify \
+  --src-ip 1.2.3.4 \
+  --dst-ip 5.6.7.8
+```
 
----
+### 4. Export Portable Local Snapshot
+```bash
+python scripts/move-resource.py snapshot-export --ip 1.2.3.4
+```
 
-### 5. Connect GitHub to Coolify ("All Repos for All VPS")
-1. Open your Coolify Dashboard at `http://<PRIMARY_VPS_IP>:8000`.
-2. Navigate to **Sources** -> **+ Add Source** -> **GitHub App**.
-3. Click **Register GitHub App** — Coolify will automatically set up the webhooks and permissions on your GitHub account (`tarikk786786`).
-4. Select **All repositories** when prompted.
-5. In Coolify, go to **Servers** -> **+ Add Server** to attach each of your other VPS nodes.
-6. Now, any repository on your GitHub can be deployed to **any of your VPS servers** with automatic SSL, custom domains, and zero-downtime rolling updates!
-
-See detailed instructions in [docs/UX_FLOWS.md](file:///c:/Users/tarik/Desktop/MY%20TOOLS/apps/coolify-vps-fleet/docs/UX_FLOWS.md) and [scripts/github-app-setup-guide.md](file:///c:/Users/tarik/Desktop/MY%20TOOLS/apps/coolify-vps-fleet/scripts/github-app-setup-guide.md).
-
----
-
-## 📦 Production Compose Templates (`templates/compose/`)
-Ready-to-deploy multi-container stacks pre-configured with Traefik SSL labels:
-- **`fullstack-node.yml`**: Next.js / Node.js web app with Redis caching & health checks.
-- **`python-fastapi.yml`**: High-performance Python FastAPI with Uvicorn workers.
-- **`n8n-automation.yml`**: Self-hosted n8n workflow automation platform.
-- **`github-action-auto-deploy.yml`**: Reusable workflow to add to any repo for instant Coolify deployment.
+### 5. Restore Snapshot to Any Fresh VPS
+```bash
+python scripts/move-resource.py snapshot-restore --snapshot backups/coolify_snapshot.tar.gz --ip 5.6.7.8
+```
 
 ---
 
-## 📁 Repository Structure
+## 🌐 Connect Your GitHub Account (`tarikk786786`)
+1. Open Coolify at `http://<PRIMARY_VPS_IP>:8000`.
+2. Go to **Sources** > **GitHub App** > **Register GitHub App**.
+3. Select account **`tarikk786786`** and choose **All repositories**.
+4. In Coolify, go to **Servers** > **+ Add Server** to attach any of your other VPS nodes.
+5. You can now deploy any repo to any server with automated Let's Encrypt SSL!
 
+---
+
+## 📁 Repository Layout
 ```
 coolify-vps-fleet/
-├── .github/
-│   └── workflows/
-│       └── deploy-coolify.yml          # GitHub Actions automated workflow
-├── config/
-│   └── vps-fleet.example.json          # Fleet definition template
-├── docs/                               # 10 Core Vibe Coding Blueprint files
-│   ├── PRD.md
-│   ├── DESIGN_SYSTEM.md
-│   ├── ARCHITECTURE.md
-│   ├── DATABASE.md
-│   ├── SECURITY.md
-│   ├── CODE_STYLE.md
-│   ├── TESTING.md
-│   ├── AGENTS.md
-│   ├── UX_FLOWS.md
-│   └── API.md
+├── .github/workflows/deploy-coolify.yml # GitHub Actions workflow
+├── backups/                             # Local portable snapshots
+├── config/vps-fleet.example.json        # Fleet configuration template
+├── docs/                                # 10 Vibe Coding Blueprint files
 ├── scripts/
-│   ├── install-coolify.sh              # Hardened host installer & resource check
-│   ├── deploy-all-vps.sh               # Multi-node bash SSH runner
-│   ├── deploy-all-vps.ps1              # Windows PowerShell fleet runner
-│   └── github-app-setup-guide.md       # Step-by-step GitHub App binding guide
+│   ├── install-coolify.sh               # Hardened host installer
+│   ├── deploy-all-vps.sh                # Bash multi-VPS runner
+│   ├── deploy-all-vps.ps1               # PowerShell multi-VPS runner
+│   ├── move-resource.py                 # Universal resource mover CLI
+│   └── github-app-setup-guide.md        # GitHub App setup guide
 ├── templates/
-│   ├── compose/                        # Production Docker Compose stacks
-│   └── github-action-auto-deploy.yml   # Reusable webhook caller
-├── tests/
-│   └── test_fleet_config.py            # Automated unit testing suite
-├── launcher.py                         # Interactive CLI Control Center
+│   ├── compose/                         # Production Compose stacks
+│   └── github-action-auto-deploy.yml    # Reusable deploy action
+├── tests/test_fleet_config.py           # Automated unit tests (5/5 passing)
+├── launcher.py                          # Interactive CLI Control Center
+├── Run.bat                              # 100% Relocatable launcher
 └── README.md
-```
-
----
-
-## 🛡️ Requirements & Ports
-- **OS**: Ubuntu 22.04/24.04 LTS, Debian 12, or AlmaLinux 9.
-- **Hardware**: Minimum 2 GB RAM (auto-swap generated if < 2GB), 10 GB disk space, x86_64 or ARM64.
-- **Firewall Ports**:
-  - `8000`: Coolify Dashboard
-  - `80` & `443`: Traefik Web Proxy & Let's Encrypt SSL
-  - `6001`: Real-time WebSockets
-  - `22`: SSH Remote Terminal
-
----
-
-## 🧪 Testing Verification
-Run the automated test suite locally:
-```bash
-python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
 ---

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Unit test suite for Coolify VPS Fleet Manager configuration & shell scripts.
-Ensures JSON schemas, file paths, syntax validation, and templates pass with 0 errors.
+Ensures JSON schemas, file paths, syntax validation, mover script, and templates pass with 0 errors.
 """
 
 import json
@@ -16,8 +16,10 @@ class TestCoolifyFleetConfig(unittest.TestCase):
         self.install_script = os.path.join(self.base_dir, "scripts", "install-coolify.sh")
         self.deploy_script = os.path.join(self.base_dir, "scripts", "deploy-all-vps.sh")
         self.ps_script = os.path.join(self.base_dir, "scripts", "deploy-all-vps.ps1")
+        self.mover_script = os.path.join(self.base_dir, "scripts", "move-resource.py")
         self.workflow_file = os.path.join(self.base_dir, ".github", "workflows", "deploy-coolify.yml")
         self.launcher_file = os.path.join(self.base_dir, "launcher.py")
+        self.portable_run = os.path.join(self.base_dir, "Run.bat")
         self.compose_dir = os.path.join(self.base_dir, "templates", "compose")
 
     def test_example_config_exists_and_valid_json(self):
@@ -43,11 +45,18 @@ class TestCoolifyFleetConfig(unittest.TestCase):
         self.assertIn("check_privileges", content)
         self.assertIn("configure_firewall", content)
 
-    def test_deploy_scripts_exist(self):
+    def test_deploy_and_mover_scripts_exist(self):
         self.assertTrue(os.path.exists(self.deploy_script), "deploy-all-vps.sh must exist")
         self.assertTrue(os.path.exists(self.ps_script), "deploy-all-vps.ps1 must exist")
+        self.assertTrue(os.path.exists(self.mover_script), "move-resource.py must exist")
         self.assertTrue(os.path.exists(self.workflow_file), "deploy-coolify.yml must exist")
         self.assertTrue(os.path.exists(self.launcher_file), "launcher.py must exist")
+        self.assertTrue(os.path.exists(self.portable_run), "Run.bat must exist")
+
+    def test_portable_launcher_uses_relative_path(self):
+        with open(self.portable_run, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("%~dp0", content, "Run.bat must use dynamic %~dp0 to be 100% relocatable")
 
     def test_compose_templates_exist(self):
         expected_templates = [

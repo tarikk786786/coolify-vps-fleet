@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Coolify VPS Fleet Manager — Interactive Control Center
+Coolify VPS Fleet Manager — Interactive Control Center & Universal Mover
 Author: Tarik Islam (tarikislam.in / github.com/tarikk786786)
 Platform: Cross-platform (Windows, Linux, macOS)
+Portability: 100% self-contained relative path resolution. Can be moved to any directory or drive.
 """
 
 import json
@@ -11,10 +12,13 @@ import subprocess
 import sys
 import webbrowser
 
+# Dynamic Base Directory Resolution (Zero hardcoding)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, "config", "vps-fleet.json")
 CONFIG_EXAMPLE = os.path.join(BASE_DIR, "config", "vps-fleet.example.json")
 SCRIPTS_DIR = os.path.join(BASE_DIR, "scripts")
+BACKUPS_DIR = os.path.join(BASE_DIR, "backups")
+MOVER_SCRIPT = os.path.join(SCRIPTS_DIR, "move-resource.py")
 
 # ANSI Terminal Colors
 CYAN = "\033[96m"
@@ -35,7 +39,7 @@ def print_banner():
   ██║     ██║   ██║██║   ██║██║     ██║██╔══╝    ╚██╔╝      ██╔══╝  ██║     ██╔══╝  ██╔══╝     ██║   
   ╚██████╗╚██████╔╝╚██████╔╝███████╗██║██║        ██║       ██║     ███████╗███████╗███████╗   ██║   
    ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝╚═╝╚═╝        ╚═╝       ╚═╝     ╚══════╝╚══════╝╚══════╝   ╚═╝   
-{RESET}{BOLD}  Multi-VPS Fleet Installer, Health Monitor & GitHub Cloud Orchestrator{RESET}
+{RESET}{BOLD}  Multi-VPS Fleet Installer, Universal Mover & GitHub Cloud Orchestrator{RESET}
   Author: Tarik Islam | https://tarikislam.in | GitHub: tarikk786786/coolify-vps-fleet
 {CYAN}================================================================================{RESET}
 """
@@ -61,10 +65,10 @@ def save_config(data):
 
 def show_fleet_status():
     config, path = load_config()
-    print(f"\n{BOLD}[Active Fleet Configuration]{RESET} Source: {path}")
+    print(f"\n{BOLD}[Active Fleet Configuration]{RESET} Location: {path}")
     servers = config.get("servers", [])
     if not servers:
-        print(f"{YELLOW}No servers configured yet. Use Option [5] to add a VPS.{RESET}")
+        print(f"{YELLOW}No servers configured yet. Use Option [4] to add a VPS.{RESET}")
         return
 
     print(f"\n{'#':<3} {'Server Name':<20} {'IP Address':<18} {'Port':<6} {'Role':<14} {'Provider':<12}")
@@ -142,7 +146,6 @@ def run_fleet_installer():
 def open_coolify_dashboard():
     config, _ = load_config()
     servers = config.get("servers", [])
-    # Find control plane or first server
     primary = next((s for s in servers if s.get("role") == "control-plane"), None)
     if not primary and servers:
         primary = servers[0]
@@ -191,6 +194,64 @@ def add_server_interactive():
     save_config(config)
 
 
+def universal_mover_menu():
+    """
+    Submenu for moving any application, volume, database, or entire Coolify instance between VPS.
+    """
+    print(f"""
+{CYAN}================================================================================
+  UNIVERSAL RESOURCE MOVER (MIGRATE ANYTHING BETWEEN VPS NODES)
+================================================================================{RESET}
+  {GREEN}[1]{RESET} Move Docker Persistent Volume (Direct VPS-to-VPS encrypted pipe)
+  {GREEN}[2]{RESET} Move Live Database (PostgreSQL or MySQL streaming replication)
+  {GREEN}[3]{RESET} Move Entire Coolify Control Plane to New VPS (/data/coolify)
+  {GREEN}[4]{RESET} Export Portable Local Snapshot from VPS
+  {GREEN}[5]{RESET} Restore Local Snapshot to New VPS
+  {RED}[0]{RESET} Back to Main Menu
+""")
+    subchoice = input(f"{CYAN}Select migration task [0-5]: {RESET}").strip()
+    if subchoice == "1":
+        src_ip = input("Source VPS IP: ").strip()
+        src_vol = input("Source Docker Volume Name: ").strip()
+        dst_ip = input("Destination VPS IP: ").strip()
+        dst_vol = input("Destination Docker Volume Name: ").strip()
+        cmd = [sys.executable, MOVER_SCRIPT, "move-volume",
+               "--src-ip", src_ip, "--src-vol", src_vol,
+               "--dst-ip", dst_ip, "--dst-vol", dst_vol]
+        subprocess.run(cmd)
+    elif subchoice == "2":
+        db_type = input("Database Type (postgres/mysql) [default: postgres]: ").strip() or "postgres"
+        src_ip = input("Source VPS IP: ").strip()
+        container = input("Source Container Name: ").strip()
+        db_name = input("Database Name: ").strip()
+        db_user = input("Database User: ").strip()
+        db_pass = input("Database Password: ").strip()
+        dst_ip = input("Destination VPS IP: ").strip()
+        dst_container = input("Destination Container Name: ").strip()
+        cmd = [sys.executable, MOVER_SCRIPT, "move-db",
+               "--type", db_type, "--src-ip", src_ip, "--container", container,
+               "--db", db_name, "--db-user", db_user, "--db-pass", db_pass,
+               "--dst-ip", dst_ip, "--dst-container", dst_container]
+        subprocess.run(cmd)
+    elif subchoice == "3":
+        src_ip = input("Current Coolify Primary VPS IP: ").strip()
+        dst_ip = input("New Target VPS IP (Clean server): ").strip()
+        print(f"\n{YELLOW}[WARNING] This will transfer all Coolify configs, databases, and apps to {dst_ip}.{RESET}")
+        confirm = input("Confirm Coolify Control Plane migration? (y/N): ").strip().lower()
+        if confirm == "y":
+            cmd = [sys.executable, MOVER_SCRIPT, "move-coolify", "--src-ip", src_ip, "--dst-ip", dst_ip]
+            subprocess.run(cmd)
+    elif subchoice == "4":
+        vps_ip = input("VPS IP to backup: ").strip()
+        cmd = [sys.executable, MOVER_SCRIPT, "snapshot-export", "--ip", vps_ip]
+        subprocess.run(cmd)
+    elif subchoice == "5":
+        snapshot = input("Path to local snapshot (.tar.gz): ").strip()
+        dst_ip = input("Destination VPS IP: ").strip()
+        cmd = [sys.executable, MOVER_SCRIPT, "snapshot-restore", "--snapshot", snapshot, "--ip", dst_ip]
+        subprocess.run(cmd)
+
+
 def show_github_guide():
     guide_path = os.path.join(SCRIPTS_DIR, "github-app-setup-guide.md")
     if os.path.exists(guide_path):
@@ -219,9 +280,11 @@ def main_menu():
   {GREEN}[4]{RESET} Add New VPS Server Node to Fleet Config
   {GREEN}[5]{RESET} View GitHub App Integration Instructions (tarikk786786)
   {GREEN}[6]{RESET} Run Fleet Test Suite (Unit Tests & Schema Validation)
+  {MAGENTA}[7] UNIVERSAL MOVER: Migrate Any App, Database or Volume between VPS{RESET}
+  {MAGENTA}[8] Snapshot Fleet: Export Full Backup to Portable Local Archive{RESET}
   {RED}[0]{RESET} Exit
 """)
-        choice = input(f"{CYAN}Select option [0-6]: {RESET}").strip()
+        choice = input(f"{CYAN}Select option [0-8]: {RESET}").strip()
         if choice == "1":
             test_ssh_connectivity()
             input("\nPress Enter to return to menu...")
@@ -240,11 +303,26 @@ def main_menu():
         elif choice == "6":
             run_unit_tests()
             input("\nPress Enter to return to menu...")
+        elif choice == "7":
+            universal_mover_menu()
+            input("\nPress Enter to return to menu...")
+        elif choice == "8":
+            config, _ = load_config()
+            servers = config.get("servers", [])
+            primary = next((s for s in servers if s.get("role") == "control-plane"), None) or (servers[0] if servers else None)
+            if primary:
+                cmd = [sys.executable, MOVER_SCRIPT, "snapshot-export", "--ip", primary.get("ip")]
+                subprocess.run(cmd)
+            else:
+                ip = input("Enter VPS IP to snapshot: ").strip()
+                cmd = [sys.executable, MOVER_SCRIPT, "snapshot-export", "--ip", ip]
+                subprocess.run(cmd)
+            input("\nPress Enter to return to menu...")
         elif choice == "0":
             print(f"\n{GREEN}Exiting Coolify Fleet Manager. Happy deploying!{RESET}")
             break
         else:
-            print(f"{RED}Invalid selection. Please choose an option from 0 to 6.{RESET}")
+            print(f"{RED}Invalid selection. Please choose an option from 0 to 8.{RESET}")
 
 
 if __name__ == "__main__":
