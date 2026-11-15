@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Unit test suite for Coolify VPS Fleet Manager configuration & shell scripts.
-Ensures JSON schemas, file paths, syntax validation, mover script, and templates pass with 0 errors.
+Unit test suite for Coolify VPS Fleet Manager configuration, scripts, and GUI.
+Ensures JSON schemas, file paths, syntax validation, mover script, GUI HUD, and templates pass with 0 errors.
 """
 
 import json
@@ -20,6 +20,9 @@ class TestCoolifyFleetConfig(unittest.TestCase):
         self.workflow_file = os.path.join(self.base_dir, ".github", "workflows", "deploy-coolify.yml")
         self.launcher_file = os.path.join(self.base_dir, "launcher.py")
         self.portable_run = os.path.join(self.base_dir, "Run.bat")
+        self.portable_gui_run = os.path.join(self.base_dir, "Run-GUI.bat")
+        self.gui_server = os.path.join(self.base_dir, "gui", "server.py")
+        self.gui_html = os.path.join(self.base_dir, "gui", "index.html")
         self.compose_dir = os.path.join(self.base_dir, "templates", "compose")
 
     def test_example_config_exists_and_valid_json(self):
@@ -53,10 +56,19 @@ class TestCoolifyFleetConfig(unittest.TestCase):
         self.assertTrue(os.path.exists(self.launcher_file), "launcher.py must exist")
         self.assertTrue(os.path.exists(self.portable_run), "Run.bat must exist")
 
+    def test_gui_components_exist(self):
+        self.assertTrue(os.path.exists(self.gui_server), "gui/server.py must exist")
+        self.assertTrue(os.path.exists(self.gui_html), "gui/index.html must exist")
+        self.assertTrue(os.path.exists(self.portable_gui_run), "Run-GUI.bat must exist")
+
     def test_portable_launcher_uses_relative_path(self):
         with open(self.portable_run, "r", encoding="utf-8") as f:
             content = f.read()
         self.assertIn("%~dp0", content, "Run.bat must use dynamic %~dp0 to be 100% relocatable")
+
+        with open(self.portable_gui_run, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("%~dp0", content, "Run-GUI.bat must use dynamic %~dp0 to be 100% relocatable")
 
     def test_compose_templates_exist(self):
         expected_templates = [

@@ -18,7 +18,9 @@ CONFIG_PATH = os.path.join(BASE_DIR, "config", "vps-fleet.json")
 CONFIG_EXAMPLE = os.path.join(BASE_DIR, "config", "vps-fleet.example.json")
 SCRIPTS_DIR = os.path.join(BASE_DIR, "scripts")
 BACKUPS_DIR = os.path.join(BASE_DIR, "backups")
+GUI_DIR = os.path.join(BASE_DIR, "gui")
 MOVER_SCRIPT = os.path.join(SCRIPTS_DIR, "move-resource.py")
+GUI_SERVER_SCRIPT = os.path.join(GUI_DIR, "server.py")
 
 # ANSI Terminal Colors
 CYAN = "\033[96m"
@@ -39,7 +41,7 @@ def print_banner():
   ██║     ██║   ██║██║   ██║██║     ██║██╔══╝    ╚██╔╝      ██╔══╝  ██║     ██╔══╝  ██╔══╝     ██║   
   ╚██████╗╚██████╔╝╚██████╔╝███████╗██║██║        ██║       ██║     ███████╗███████╗███████╗   ██║   
    ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝╚═╝╚═╝        ╚═╝       ╚═╝     ╚══════╝╚══════╝╚══════╝   ╚═╝   
-{RESET}{BOLD}  Multi-VPS Fleet Installer, Universal Mover & GitHub Cloud Orchestrator{RESET}
+{RESET}{BOLD}  Multi-VPS Fleet Installer, Visual GUI HUD & GitHub Cloud Orchestrator{RESET}
   Author: Tarik Islam | https://tarikislam.in | GitHub: tarikk786786/coolify-vps-fleet
 {CYAN}================================================================================{RESET}
 """
@@ -68,7 +70,7 @@ def show_fleet_status():
     print(f"\n{BOLD}[Active Fleet Configuration]{RESET} Location: {path}")
     servers = config.get("servers", [])
     if not servers:
-        print(f"{YELLOW}No servers configured yet. Use Option [4] to add a VPS.{RESET}")
+        print(f"{YELLOW}No servers configured yet. Use Option [4] or GUI to add a VPS.{RESET}")
         return
 
     print(f"\n{'#':<3} {'Server Name':<20} {'IP Address':<18} {'Port':<6} {'Role':<14} {'Provider':<12}")
@@ -81,6 +83,11 @@ def show_fleet_status():
         provider = s.get("provider", "generic")
         print(f"{idx:<3} {name:<20} {ip:<18} {port:<6} {role:<14} {provider:<12}")
     print("-" * 75)
+
+
+def launch_visual_gui():
+    print(f"\n{GREEN}Launching Visual Glassmorphic GUI HUD (http://127.0.0.1:8450)...{RESET}")
+    subprocess.run([sys.executable, GUI_SERVER_SCRIPT])
 
 
 def test_ssh_connectivity():
@@ -195,9 +202,6 @@ def add_server_interactive():
 
 
 def universal_mover_menu():
-    """
-    Submenu for moving any application, volume, database, or entire Coolify instance between VPS.
-    """
     print(f"""
 {CYAN}================================================================================
   UNIVERSAL RESOURCE MOVER (MIGRATE ANYTHING BETWEEN VPS NODES)
@@ -274,6 +278,7 @@ def main_menu():
         show_fleet_status()
         print(f"""
 {BOLD}[FLEET COMMAND OPTIONS]{RESET}
+  {CYAN}{BOLD}[G] LAUNCH VISUAL GUI HUD (Browser Dashboard @ :8450){RESET}
   {GREEN}[1]{RESET} Test SSH Connectivity & Latency to All VPS Nodes
   {GREEN}[2]{RESET} Install / Upgrade Coolify on All VPS Nodes
   {GREEN}[3]{RESET} Open Primary Coolify Dashboard in Browser (:8000)
@@ -284,8 +289,11 @@ def main_menu():
   {MAGENTA}[8] Snapshot Fleet: Export Full Backup to Portable Local Archive{RESET}
   {RED}[0]{RESET} Exit
 """)
-        choice = input(f"{CYAN}Select option [0-8]: {RESET}").strip()
-        if choice == "1":
+        choice = input(f"{CYAN}Select option [G, 0-8]: {RESET}").strip().upper()
+        if choice == "G":
+            launch_visual_gui()
+            input("\nPress Enter to return to menu...")
+        elif choice == "1":
             test_ssh_connectivity()
             input("\nPress Enter to return to menu...")
         elif choice == "2":
@@ -322,7 +330,7 @@ def main_menu():
             print(f"\n{GREEN}Exiting Coolify Fleet Manager. Happy deploying!{RESET}")
             break
         else:
-            print(f"{RED}Invalid selection. Please choose an option from 0 to 8.{RESET}")
+            print(f"{RED}Invalid selection. Please choose an option from G, 0 to 8.{RESET}")
 
 
 if __name__ == "__main__":
