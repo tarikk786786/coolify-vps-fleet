@@ -1,0 +1,14 @@
+[
+  {
+    "id": "dpl_87e039ea",
+    "project_name": "coolify-vps-fleet",
+    "url": "http://192.0.2.10:6806",
+    "status": "ready",
+    "branch": "main",
+    "commit": "ea47e75",
+    "commit_message": "Deploy via Vercel for VPS (docker)",
+    "server_name": "vps-control-plane",
+    "server_ip": "192.0.2.10",
+    "created_at": "2026-11-15T23:07:39Z"
+  }
+]

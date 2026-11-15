@@ -1,5 +1,20 @@
 [
   {
+    "id": "prj_coolify_vps_fleet",
+    "name": "coolify-vps-fleet",
+    "repo": "tarikk786786/coolify-vps-fleet",
+    "framework": "docker",
+    "branch": "main",
+    "commit": "ea47e75",
+    "commit_message": "Deploy via Vercel for VPS (docker)",
+    "status": "ready",
+    "server_name": "vps-control-plane",
+    "server_ip": "192.0.2.10",
+    "production_url": "http://192.0.2.10:6806",
+    "created_at": "2026-11-15T23:07:39Z",
+    "env_vars": {}
+  },
+  {
     "id": "prj_mark_lvi",
     "name": "mark-lvi",
     "repo": "tarikk786786/mark-lvi",
