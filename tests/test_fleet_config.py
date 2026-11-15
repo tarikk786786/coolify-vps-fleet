@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Unit test suite for Coolify VPS Fleet Manager configuration & shell scripts.
-Ensures JSON schemas, file paths, and syntax validation pass with 0 errors.
+Ensures JSON schemas, file paths, syntax validation, and templates pass with 0 errors.
 """
 
 import json
@@ -17,6 +17,8 @@ class TestCoolifyFleetConfig(unittest.TestCase):
         self.deploy_script = os.path.join(self.base_dir, "scripts", "deploy-all-vps.sh")
         self.ps_script = os.path.join(self.base_dir, "scripts", "deploy-all-vps.ps1")
         self.workflow_file = os.path.join(self.base_dir, ".github", "workflows", "deploy-coolify.yml")
+        self.launcher_file = os.path.join(self.base_dir, "launcher.py")
+        self.compose_dir = os.path.join(self.base_dir, "templates", "compose")
 
     def test_example_config_exists_and_valid_json(self):
         self.assertTrue(os.path.exists(self.config_example), "config/vps-fleet.example.json must exist")
@@ -45,6 +47,21 @@ class TestCoolifyFleetConfig(unittest.TestCase):
         self.assertTrue(os.path.exists(self.deploy_script), "deploy-all-vps.sh must exist")
         self.assertTrue(os.path.exists(self.ps_script), "deploy-all-vps.ps1 must exist")
         self.assertTrue(os.path.exists(self.workflow_file), "deploy-coolify.yml must exist")
+        self.assertTrue(os.path.exists(self.launcher_file), "launcher.py must exist")
+
+    def test_compose_templates_exist(self):
+        expected_templates = [
+            "fullstack-node.yml",
+            "python-fastapi.yml",
+            "n8n-automation.yml"
+        ]
+        for t in expected_templates:
+            t_path = os.path.join(self.compose_dir, t)
+            self.assertTrue(os.path.exists(t_path), f"Template {t} must exist")
+            with open(t_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            self.assertIn("version:", content)
+            self.assertIn("services:", content)
 
 
 if __name__ == "__main__":

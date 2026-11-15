@@ -1,0 +1,27 @@
+# ==============================================================================
+# Reusable Coolify Webhook Deploy Action
+# Drop this file into .github/workflows/deploy.yml of any of your projects!
+# ==============================================================================
+name: Deploy to Coolify VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  coolify-deploy:
+    name: Trigger Coolify Webhook
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Webhook Request to Coolify
+        run: |
+          if [ -z "${{ secrets.COOLIFY_WEBHOOK_URL }}" ]; then
+            echo "[WARN] COOLIFY_WEBHOOK_URL secret not configured. Skipping webhook call."
+            echo "To enable: Go to Repo Settings -> Secrets -> Actions -> Add COOLIFY_WEBHOOK_URL"
+            exit 0
+          fi
+          echo "Sending deployment trigger to Coolify..."
+          curl -s -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" || true
+          echo "Deployment signal dispatched to Coolify!"
