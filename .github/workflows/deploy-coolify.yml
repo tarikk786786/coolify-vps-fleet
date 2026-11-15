@@ -1,0 +1,65 @@
+name: Deploy Coolify to VPS Fleet
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_server:
+        description: 'Target server to provision ("all" or specific IP/name)'
+        required: true
+        default: 'all'
+      force_update:
+        description: 'Force re-running Coolify installer if already present'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  provision-fleet:
+    name: Provision Coolify on VPS Fleet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Fleet Configuration
+        run: |
+          if [ -f config/vps-fleet.json ]; then
+            CONFIG_PATH="config/vps-fleet.json"
+          else
+            CONFIG_PATH="config/vps-fleet.example.json"
+          fi
+          echo "Using configuration: $CONFIG_PATH"
+          jq '.' "$CONFIG_PATH" > /dev/null
+          echo "Configuration JSON is valid."
+
+      - name: Setup SSH Key
+        if: env.SSH_PRIVATE_KEY != ''
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $(jq -r '.servers[].ip' config/vps-fleet.json 2>/dev/null || echo "") >> ~/.ssh/known_hosts || true
+
+      - name: Execute Multi-VPS Fleet Installer
+        if: env.SSH_PRIVATE_KEY != ''
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          chmod +x scripts/install-coolify.sh scripts/deploy-all-vps.sh
+          ./scripts/deploy-all-vps.sh config/vps-fleet.json
+
+      - name: Dry Run Notice (If Secrets Not Set)
+        if: env.SSH_PRIVATE_KEY == ''
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "===================================================================="
+          echo "NOTE: GitHub Secret 'SSH_PRIVATE_KEY' is not configured yet."
+          echo "To enable automated CI/CD deployment from GitHub Actions:"
+          echo "1. Go to your repository Settings -> Secrets and variables -> Actions"
+          echo "2. Add 'SSH_PRIVATE_KEY' containing your VPS SSH private key."
+          echo "3. Update 'config/vps-fleet.json' with your real VPS IP addresses."
+          echo "===================================================================="
