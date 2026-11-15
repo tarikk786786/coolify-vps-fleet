@@ -15,3 +15,4 @@ config/vps-fleet.json
 *.pem
 *.key
 id_rsa*
+config/*.log

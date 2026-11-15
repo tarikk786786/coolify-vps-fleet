@@ -1,22 +1,38 @@
 #!/usr/bin/env python3
 """
 Unit test suite for Coolify VPS Fleet Manager configuration, scripts, and GUI.
-Ensures JSON schemas, file paths, syntax validation, mover script, GUI HUD, and templates pass with 0 errors.
+Ensures JSON schemas, file paths, syntax validation, mover script, GUI HUD,
+domain manager, Cloudflare tunnel, and cloud deployment pass with 0 errors.
 """
 
 import json
 import os
+import sys
 import unittest
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(BASE_DIR, "scripts"))
+try:
+    import domain_manager
+except ImportError:
+    domain_manager = None
+
+try:
+    import tunnel_manager
+except ImportError:
+    tunnel_manager = None
 
 
 class TestCoolifyFleetConfig(unittest.TestCase):
     def setUp(self):
-        self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.base_dir = BASE_DIR
         self.config_example = os.path.join(self.base_dir, "config", "vps-fleet.example.json")
+        self.domains_file = os.path.join(self.base_dir, "config", "domains.json")
         self.install_script = os.path.join(self.base_dir, "scripts", "install-coolify.sh")
         self.deploy_script = os.path.join(self.base_dir, "scripts", "deploy-all-vps.sh")
         self.ps_script = os.path.join(self.base_dir, "scripts", "deploy-all-vps.ps1")
         self.mover_script = os.path.join(self.base_dir, "scripts", "move-resource.py")
+        self.cloud_deploy_script = os.path.join(self.base_dir, "scripts", "deploy-cloud-vps.py")
         self.workflow_file = os.path.join(self.base_dir, ".github", "workflows", "deploy-coolify.yml")
         self.launcher_file = os.path.join(self.base_dir, "launcher.py")
         self.portable_run = os.path.join(self.base_dir, "Run.bat")
@@ -39,6 +55,28 @@ class TestCoolifyFleetConfig(unittest.TestCase):
             self.assertIn("role", s)
             self.assertIn(s["role"], ["control-plane", "worker"])
 
+    def test_domains_config_and_dns_records(self):
+        self.assertTrue(os.path.exists(self.domains_file), "config/domains.json must exist")
+        with open(self.domains_file, "r", encoding="utf-8") as f:
+            domains = json.load(f)
+        self.assertIsInstance(domains, list)
+        self.assertGreater(len(domains), 0)
+
+        for d in domains:
+            self.assertIn("domain", d)
+            self.assertIn("dns_type", d)
+            self.assertIn("status", d)
+
+        # Test domain manager DNS record generation
+        if domain_manager:
+            records = domain_manager.generate_dns_records("app.tarikislam.in", "1.2.3.4", "target.cf.com")
+            self.assertEqual(len(records), 2)
+            self.assertEqual(records[0]["type"], "A")
+            self.assertEqual(records[0]["name"], "app")
+            self.assertEqual(records[0]["content"], "1.2.3.4")
+            self.assertEqual(records[1]["type"], "CNAME")
+            self.assertEqual(records[1]["content"], "target.cf.com")
+
     def test_install_script_contains_security_checks(self):
         self.assertTrue(os.path.exists(self.install_script), "install-coolify.sh must exist")
         with open(self.install_script, "r", encoding="utf-8") as f:
@@ -52,6 +90,7 @@ class TestCoolifyFleetConfig(unittest.TestCase):
         self.assertTrue(os.path.exists(self.deploy_script), "deploy-all-vps.sh must exist")
         self.assertTrue(os.path.exists(self.ps_script), "deploy-all-vps.ps1 must exist")
         self.assertTrue(os.path.exists(self.mover_script), "move-resource.py must exist")
+        self.assertTrue(os.path.exists(self.cloud_deploy_script), "deploy-cloud-vps.py must exist")
         self.assertTrue(os.path.exists(self.workflow_file), "deploy-coolify.yml must exist")
         self.assertTrue(os.path.exists(self.launcher_file), "launcher.py must exist")
         self.assertTrue(os.path.exists(self.portable_run), "Run.bat must exist")

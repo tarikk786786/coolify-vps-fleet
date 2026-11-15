@@ -1,23 +1,46 @@
-# User Experience Flows — Coolify Multi-VPS Setup
+# UX Flows & User Journeys — Coolify VPS Fleet Manager & Vercel for VPS
 
-## Flow 1: New VPS Node Provisioning
+## 1. Custom Domain Connection Journey
 ```
-[User acquires new VPS IP] 
+[User Clicks "Domains" Tab]
            │
            ▼
-[Adds entry to config/vps-fleet.json]
+[Clicks "Add Custom Domain"] ──► Enters "app.tarikislam.in" & picks Project
            │
            ▼
-[Runs ./scripts/deploy-all-vps.ps1]
+[Control Plane Computes DNS] ──► Displays CNAME / A Record instructions
            │
-           ├──► [Handshake OK] ────► [Pipes install-coolify.sh] ──► [Success (Port 8000 Ready)]
+           ▼
+[User configures Cloudflare / DNS Provider]
            │
-           └──► [Handshake Fail] ──► [Logs Timeout/Auth Error] ──► [Prompts user to verify key]
+           ▼
+[User Clicks "Verify DNS Now"] ──► Queries Cloudflare 1.1.1.1 DoH
+           │
+     ┌─────┴────────┐
+     ▼              ▼
+[Match Found]  [Pending Propagation]
+     │              │
+Green Badge    Amber Badge (Try again in 60s)
+SSL Active
 ```
 
-## Flow 2: Connecting GitHub Account to Coolify
-1. **User opens Coolify UI** at `http://<VPS_IP>:8000`.
-2. **Navigates to Sources**: Clicks `GitHub App` -> `+ Add`.
-3. **Automated Registration**: Coolify generates GitHub registration URL.
-4. **GitHub Approval**: User selects `tarikk786786` and clicks `Install & Authorize`.
-5. **Ready**: All repositories now populate in Coolify for 1-click deployments across any connected VPS.
+## 2. 24/7 Always-Live Cloud VPS Provisioning Journey
+```
+[User Clicks "24/7 Cloud" Tab]
+           │
+           ▼
+[Selects "Deploy 24/7 to Cloud VPS"]
+           │
+           ▼
+[Enters VPS Public IP + SSH User + Domain]
+           │
+           ▼
+[Automated Runner Executes over SSH]:
+  1. apt-get update & install Docker / Docker Compose
+  2. UFW firewall allow 22, 80, 443, 8000
+  3. curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+  4. Configures APP_URL=https://coolify.tarikislam.in
+           │
+           ▼
+[Server Added to Fleet] ──► 24/7 Always-Live Cloud Control Plane Ready
+```

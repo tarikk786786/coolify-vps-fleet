@@ -277,11 +277,16 @@ def main_menu():
         print_banner()
         show_fleet_status()
         print(f"""
+{BOLD}[CONTROL PLANE & 24/7 CLOUD]{RESET}
+  {CYAN}{BOLD}[G] LAUNCH VERCEL FOR VPS WEB GUI (Browser Dashboard @ :8450){RESET}
+  {GREEN}{BOLD}[D] MANAGE CUSTOM DOMAINS & VERIFY LIVE DNS PROPAGATION{RESET}
+  {GREEN}{BOLD}[C] DEPLOY 24/7 ALWAYS-LIVE CLOUD VPS (Oracle / Hetzner / AWS){RESET}
+  {GREEN}{BOLD}[T] START / RESTART CLOUDFLARE 24/7 EDGE TUNNEL{RESET}
+
 {BOLD}[FLEET COMMAND OPTIONS]{RESET}
-  {CYAN}{BOLD}[G] LAUNCH VISUAL GUI HUD (Browser Dashboard @ :8450){RESET}
   {GREEN}[1]{RESET} Test SSH Connectivity & Latency to All VPS Nodes
   {GREEN}[2]{RESET} Install / Upgrade Coolify on All VPS Nodes
-  {GREEN}[3]{RESET} Open Primary Coolify Dashboard in Browser (:8000)
+  {GREEN}[3]{RESET} Open Coolify Dashboard (Internal :8888 / Cloudflare Edge)
   {GREEN}[4]{RESET} Add New VPS Server Node to Fleet Config
   {GREEN}[5]{RESET} View GitHub App Integration Instructions (tarikk786786)
   {GREEN}[6]{RESET} Run Fleet Test Suite (Unit Tests & Schema Validation)
@@ -289,9 +294,29 @@ def main_menu():
   {MAGENTA}[8] Snapshot Fleet: Export Full Backup to Portable Local Archive{RESET}
   {RED}[0]{RESET} Exit
 """)
-        choice = input(f"{CYAN}Select option [G, 0-8]: {RESET}").strip().upper()
+        choice = input(f"{CYAN}Select option [G, D, C, T, 0-8]: {RESET}").strip().upper()
         if choice == "G":
             launch_visual_gui()
+            input("\nPress Enter to return to menu...")
+        elif choice == "D":
+            dom = input("Enter domain or subdomain (e.g. app.tarikislam.in): ").strip()
+            target = input("Enter target IP or tunnel URL (leave blank for local): ").strip() or "172.30.148.196"
+            dm_script = os.path.join(BASE_DIR, "scripts", "domain_manager.py")
+            subprocess.run([sys.executable, dm_script, "check", dom, target])
+            input("\nPress Enter to return to menu...")
+        elif choice == "C":
+            vps_ip = input("Enter remote Cloud VPS IP address: ").strip()
+            vps_domain = input("Enter custom domain (optional, e.g. coolify.tarikislam.in): ").strip()
+            if vps_ip:
+                cd_script = os.path.join(BASE_DIR, "scripts", "deploy-cloud-vps.py")
+                cmd = [sys.executable, cd_script, vps_ip]
+                if vps_domain:
+                    cmd.append(vps_domain)
+                subprocess.run(cmd)
+            input("\nPress Enter to return to menu...")
+        elif choice == "T":
+            tm_script = os.path.join(BASE_DIR, "scripts", "tunnel_manager.py")
+            subprocess.run([sys.executable, tm_script, "start"])
             input("\nPress Enter to return to menu...")
         elif choice == "1":
             test_ssh_connectivity()

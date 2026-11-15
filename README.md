@@ -1,117 +1,61 @@
-# Coolify VPS Fleet Manager, Universal Mover & Visual GUI HUD
+# Coolify VPS Fleet Manager — Vercel for VPS (Custom Domains & 24/7 Always-Live Cloud)
 
 [![CI/CD Fleet Deployment](https://github.com/tarikk786786/coolify-vps-fleet/actions/workflows/deploy-coolify.yml/badge.svg)](https://github.com/tarikk786786/coolify-vps-fleet/actions/workflows/deploy-coolify.yml)
 [![Vibe Coding Standard](https://img.shields.io/badge/Standard-Vibe%20Coding%20Blueprint-blue.svg)](docs/)
 [![Author](https://img.shields.io/badge/Author-tarikislam.in-green.svg)](https://tarikislam.in)
+[![Cloudflare Tunnel](https://img.shields.io/badge/Edge%20Tunnel-Cloudflare%20Zero--Trust-orange.svg)](https://cloudflare.com)
 
-Automated deployment engine, multi-VPS orchestrator, **Universal Resource Mover**, and **Dark Glassmorphic Visual GUI HUD** for **Coolify (Self-Hosted Cloud PaaS)**. Built to be **100% relocatable and portable** — you can move this folder to any directory, drive, or machine, and move any application, database, or Docker volume between any VPS servers with zero downtime.
+Automated deployment engine, multi-VPS orchestrator, **Custom Domain Manager (Vercel-Style)**, **24/7 Always-Live Cloud VPS Provisioner**, and **Visual Web GUI Control Plane** for **Coolify v4 (Self-Hosted Cloud PaaS)**. Built to give developers the full speed, aesthetics, and simplicity of Vercel on their own VPS fleet and local machines.
 
 ---
 
-## 🖥️ Visual GUI HUD (Local Web Dashboard)
-A complete desktop GUI powered by a local zero-dependency Python server (`http://127.0.0.1:8450`):
-- **Fleet Dashboard**: Visual cards for every server, live latency, role badges, and 1-click test/deploy buttons.
-- **Universal Mover**: Interactive 3-step visual migration pipeline (Source VPS ──► Resource Type ──► Destination VPS).
-- **GitHub Integration**: Direct bindings and deep-links for `tarikk786786`.
-- **Snapshots & Restore**: Download, carry, and restore full fleet backups.
-- **Live Terminal Feed**: Real-time console log stream in your browser.
+## 🌟 Key Features
 
-### Launching the Visual GUI:
+### 1. 🌐 Vercel-Style Custom Domains Management
+- **Instant Domain Connection**: Bind custom apex domains or subdomains (`tarikislam.in`, `coolify.tarikislam.in`, `jarvis.tarikislam.in`, `vps.dezo.in`) to any deployed project or control plane in 1 click.
+- **DNS Record Generator**: Automatically generates exact `A` and `CNAME` records tailored for Cloudflare, Route53, Namecheap, GoDaddy, and Hostinger.
+- **Live DNS Propagation Diagnostic**: Real-time DNS lookup over Cloudflare 1.1.1.1 DoH to verify when records have propagated worldwide.
+- **Automated SSL**: Automatic Let's Encrypt and Cloudflare edge certificate provisioning.
+
+### 2. ⚡ 24/7 Always-Live Cloud Architecture
+- **1-Click Cloud VPS Deployment (`scripts/deploy-cloud-vps.py`)**: Connects over SSH to any cloud VPS (Oracle Cloud Always-Free ARM 4-Core 24GB, Hetzner, DigitalOcean, Linode, AWS EC2), hardens system, configures UFW firewall, and installs the official Coolify v4 engine (`coollabsio/coolify:4.7.5`).
+- **Cloudflare Zero-Trust 24/7 Edge Tunnel (`scripts/tunnel_manager.py`)**: Persistent background tunnel that exposes Coolify over Cloudflare's global Anycast edge network with zero open ports and automatic reconnect.
+- **Silent Windows Background Auto-Start (`scripts/coolify-silent-boot.vbs`)**: Auto-starts WSL2 Docker daemon, Coolify containers, and edge tunnels on Windows boot without opening terminal windows.
+
+### 3. 🖥️ Visual Web GUI Control Plane (`:8450`)
+- **Overview**: GitHub repository selector, framework presets (Docker, Next.js, Node, Python, Static), instant deployment trigger, visit links.
+- **Deployments**: Complete history of commits, branches, servers, and build statuses.
+- **Domains Tab**: Manage all custom domains, view DNS records, and trigger live verification.
+- **24/7 Cloud Tab**: Cloud VPS status, 1-click cloud deployer, and background service controls.
+- **Servers Fleet**: Node inventory with role badges (control-plane vs worker) and latency checks.
+
+---
+
+## 🚀 Quickstart & Launchers
+
+### Launching the Web GUI:
+- From Windows Desktop: Double-click **`Coolify Fleet Manager`** shortcut on Desktop.
 - From workspace root: [`Run-CoolifyFleet-GUI.bat`](file:///c:/Users/tarik/Desktop/MY%20TOOLS/Run-CoolifyFleet-GUI.bat)
 - From inside folder: [`Run-GUI.bat`](file:///c:/Users/tarik/Desktop/MY%20TOOLS/apps/coolify-vps-fleet/Run-GUI.bat)
-- From CLI: `python gui/server.py` or Option `[G]` in `launcher.py`.
+- Browser URL: `http://127.0.0.1:8450`
+
+### Official Coolify v4 Control Plane:
+- Local Internal: `http://172.30.148.196:8888`
+- Live Public HTTPS (Cloudflare Edge): `https://showers-theft-garcia-thumbnails.trycloudflare.com`
 
 ---
 
-## ⚡ 100% Portable & Relocatable Architecture
-- **Zero Hardcoded Paths**: All scripts, batch files, and tools use dynamic relative path resolution (`%~dp0`, `$PSScriptRoot`, `os.path.dirname`).
-- **Move Anywhere**: You can copy or move `coolify-vps-fleet` to any drive (C:, D:, USB, or another machine) and double-click `Run.bat` or `Run-GUI.bat` — it immediately runs without re-configuration.
+## 🛠️ Tech Stack & Architecture
+- **Control Plane**: Python 3 standard library (`http.server`, `socket`, `urllib.request`).
+- **Frontend**: Tailwind CSS, Geist & Geist Mono fonts, Vercel Dark Mode tokens.
+- **Engine**: Official Coolify v4 (`coollabsio/coolify:4.7.5`), Traefik v3.7, PostgreSQL 15, Redis 7.
+- **Edge Routing**: Cloudflare Zero-Trust Tunnel (`cloudflared` v2026.11.0).
 
 ---
 
-## 🚀 Terminal Launchers
-- From workspace root: [`Run-CoolifyFleet.bat`](file:///c:/Users/tarik/Desktop/MY%20TOOLS/Run-CoolifyFleet.bat)
-- From inside the project folder: [`Run.bat`](file:///c:/Users/tarik/Desktop/MY%20TOOLS/apps/coolify-vps-fleet/Run.bat)
-
-```
-[FLEET COMMAND OPTIONS]
-  [G] LAUNCH VISUAL GUI HUD (Browser Dashboard @ :8450)
-  [1] Test SSH Connectivity & Latency to All VPS Nodes
-  [2] Install / Upgrade Coolify on All VPS Nodes
-  [3] Open Primary Coolify Dashboard in Browser (:8000)
-  [4] Add New VPS Server Node to Fleet Config
-  [5] View GitHub App Integration Instructions (tarikk786786)
-  [6] Run Fleet Test Suite (Unit Tests & Schema Validation)
-  [7] UNIVERSAL MOVER: Migrate Any App, Database or Volume between VPS
-  [8] Snapshot Fleet: Export Full Backup to Portable Local Archive
-  [0] Exit
-```
-
----
-
-## 📦 Universal Mover Engine (`scripts/move-resource.py`)
-
-### 1. Move a Docker Volume Between VPS Nodes
-Stream persistent data directly between servers over encrypted SSH:
+## 🧪 Testing & Validation
+Run automated unit tests:
 ```bash
-python scripts/move-resource.py move-volume \
-  --src-ip 1.2.3.4 --src-vol my_data_vol \
-  --dst-ip 5.6.7.8 --dst-vol my_data_vol
+python -m unittest tests/test_fleet_config.py
 ```
-
-### 2. Move a Live Database
-Stream PostgreSQL / MySQL directly into the destination container:
-```bash
-python scripts/move-resource.py move-db \
-  --type postgres \
-  --src-ip 1.2.3.4 --container pg-db --db prod_db --db-user postgres --db-pass secret \
-  --dst-ip 5.6.7.8 --dst-container pg-db
-```
-
-### 3. Move the Entire Coolify Control Plane to a New VPS
-Transfers all configuration, databases, registered apps, and SSH keys in one step:
-```bash
-python scripts/move-resource.py move-coolify \
-  --src-ip 1.2.3.4 \
-  --dst-ip 5.6.7.8
-```
-
----
-
-## 🌐 Connect Your GitHub Account (`tarikk786786`)
-1. Open Coolify at `http://<PRIMARY_VPS_IP>:8000`.
-2. Go to **Sources** > **GitHub App** > **Register GitHub App**.
-3. Select account **`tarikk786786`** and choose **All repositories**.
-4. In Coolify, go to **Servers** > **+ Add Server** to attach any of your other VPS nodes.
-5. You can now deploy any repo to any server with automated Let's Encrypt SSL!
-
----
-
-## 📁 Repository Layout
-```
-coolify-vps-fleet/
-├── .github/workflows/deploy-coolify.yml # GitHub Actions CI/CD workflow
-├── backups/                             # Local portable snapshots
-├── config/vps-fleet.example.json        # Fleet configuration template
-├── docs/                                # 10 Vibe Coding Blueprint files
-├── gui/                                 # Visual GUI HUD Dashboard
-│   ├── index.html                       # Modern Tailwind/Glassmorphism UI
-│   └── server.py                        # Zero-dependency local REST API server (:8450)
-├── scripts/
-│   ├── install-coolify.sh               # Hardened host installer
-│   ├── deploy-all-vps.sh                # Bash multi-VPS runner
-│   ├── deploy-all-vps.ps1               # PowerShell multi-VPS runner
-│   ├── move-resource.py                 # Universal resource mover CLI
-│   └── github-app-setup-guide.md        # GitHub App setup guide
-├── templates/
-│   ├── compose/                         # Production Compose stacks
-│   └── github-action-auto-deploy.yml    # Reusable deploy action
-├── tests/test_fleet_config.py           # Automated unit tests (6/6 passing)
-├── launcher.py                          # Interactive CLI Control Center
-├── Run.bat                              # 100% Relocatable terminal launcher
-├── Run-GUI.bat                          # 100% Relocatable GUI launcher
-└── README.md
-```
-
----
-*Maintained by [Tarik Islam](https://tarikislam.in) | Crafted under the Vibe Coding Blueprint Standard.*
+All tests pass with 0 errors.

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "dom_coolify_cf",
+    "domain": "coolify.tarikislam.in",
+    "project": "Coolify Fleet Control Plane",
+    "project_id": "prj_control_plane",
+    "server_name": "Primary VPS / Local Host",
+    "server_ip": "172.30.148.196",
+    "port": 8888,
+    "dns_type": "CNAME",
+    "dns_target": "showers-theft-garcia-thumbnails.trycloudflare.com",
+    "status": "configured",
+    "ssl_status": "active (Cloudflare SSL)",
+    "verified": true,
+    "last_checked": "2026-11-15T19:10:00Z",
+    "dns_records": [
+      {
+        "type": "CNAME",
+        "name": "coolify",
+        "domain": "coolify.tarikislam.in",
+        "apex": "tarikislam.in",
+        "content": "showers-theft-garcia-thumbnails.trycloudflare.com",
+        "ttl": "Auto",
+        "proxied": true,
+        "purpose": "Cloudflare Zero-Trust CNAME for 24/7 HTTPS routing to Coolify"
+      }
+    ]
+  },
+  {
+    "id": "dom_mark_lvi",
+    "domain": "jarvis.tarikislam.in",
+    "project": "mark-lvi",
+    "project_id": "prj_mark_lvi",
+    "server_name": "Primary VPS / Local Host",
+    "server_ip": "172.30.148.196",
+    "port": 8000,
+    "dns_type": "CNAME",
+    "dns_target": "showers-theft-garcia-thumbnails.trycloudflare.com",
+    "status": "pending_dns",
+    "ssl_status": "ready_to_provision",
+    "verified": false,
+    "last_checked": "2026-11-15T19:10:00Z",
+    "dns_records": [
+      {
+        "type": "CNAME",
+        "name": "jarvis",
+        "domain": "jarvis.tarikislam.in",
+        "apex": "tarikislam.in",
+        "content": "showers-theft-garcia-thumbnails.trycloudflare.com",
+        "ttl": "Auto",
+        "proxied": true,
+        "purpose": "Public CNAME routing to Mark-LVI (JARVIS) backend"
+      }
+    ]
+  },
+  {
+    "id": "dom_dezo_vps",
+    "domain": "vps.dezo.in",
+    "project": "dezo-website",
+    "project_id": "prj_dezo_website",
+    "server_name": "Cloud VPS (24/7 Always-Live)",
+    "server_ip": "YOUR_VPS_PUBLIC_IP",
+    "port": 3000,
+    "dns_type": "A",
+    "dns_target": "YOUR_VPS_PUBLIC_IP",
+    "status": "pending_dns",
+    "ssl_status": "ready_to_provision",
+    "verified": false,
+    "last_checked": "2026-11-15T19:10:00Z",
+    "dns_records": [
+      {
+        "type": "A",
+        "name": "vps",
+        "domain": "vps.dezo.in",
+        "apex": "dezo.in",
+        "content": "YOUR_VPS_PUBLIC_IP",
+        "ttl": "Auto (300s)",
+        "proxied": true,
+        "purpose": "A Record pointing directly to 24/7 Cloud VPS"
+      }
+    ]
+  }
+]
