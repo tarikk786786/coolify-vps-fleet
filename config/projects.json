@@ -1,0 +1,30 @@
+[
+  {
+    "id": "prj_mark_lvi",
+    "name": "mark-lvi",
+    "repo": "tarikk786786/mark-lvi",
+    "framework": "docker",
+    "branch": "main",
+    "commit": "dd4debb",
+    "commit_message": "Production container setup",
+    "status": "ready",
+    "server_name": "Oracle Cloud Free Tier",
+    "server_ip": "140.238.160.45",
+    "production_url": "http://140.238.160.45:8100",
+    "created_at": "2026-11-15T10:00:00Z"
+  },
+  {
+    "id": "prj_amazon_intelligence",
+    "name": "amazon-intelligence-suite",
+    "repo": "tarikk786786/amazon-intelligence-suite",
+    "framework": "python",
+    "branch": "main",
+    "commit": "a82f19c",
+    "commit_message": "Unified Amazon intelligence analytics",
+    "status": "ready",
+    "server_name": "Oracle Cloud Free Tier",
+    "server_ip": "140.238.160.45",
+    "production_url": "http://140.238.160.45:8800",
+    "created_at": "2026-11-15T07:00:00Z"
+  }
+]
