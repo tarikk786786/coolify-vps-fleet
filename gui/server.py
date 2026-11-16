@@ -41,6 +41,11 @@ try:
 except ImportError:
     tunnel_manager = None
 
+try:
+    import one_click_deploy
+except ImportError:
+    one_click_deploy = None
+
 PORT = 8450
 
 
@@ -222,10 +227,38 @@ class VercelGUIHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
-        length = int(self.headers.get("Content-Length", 0))
-        body = json.loads(self.rfile.read(length).decode("utf-8")) if length > 0 else {}
+        body = {}
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            if length > 0:
+                raw_bytes = self.rfile.read(length)
+                raw_text = raw_bytes.decode("utf-8", errors="replace")
+                body = json.loads(raw_text)
+        except Exception:
+            body = {}
 
-        if path == "/api/projects/deploy":
+        if path == "/api/deploy/one-click":
+            repo_name = body.get("repo", "app")
+            custom_domain = body.get("domain", "")
+            branch = body.get("branch", "main")
+            framework = body.get("framework", "dockerfile")
+            port = body.get("port", "3000")
+
+            if one_click_deploy:
+                result = one_click_deploy.one_click_deploy(
+                    repo_name=repo_name,
+                    domain=custom_domain,
+                    branch=branch,
+                    framework=framework,
+                    port=port
+                )
+            else:
+                result = {"status": "error", "message": "one_click_deploy module unavailable"}
+
+            self._set_headers(200)
+            self.wfile.write(json.dumps(result).encode("utf-8"))
+
+        elif path == "/api/projects/deploy":
             repo_name = body.get("repo", "app")
             name = body.get("name", repo_name.split("/")[-1])
             framework = body.get("framework", "docker")

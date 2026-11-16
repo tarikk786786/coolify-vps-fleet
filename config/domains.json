@@ -1,5 +1,79 @@
 [
   {
+    "id": "dom_388611",
+    "domain": "jarvis.tarikislam.in",
+    "project": "mark-lvi",
+    "project_id": "prj_mark_lvi",
+    "server_name": "Primary VPS",
+    "server_ip": "172.30.148.196",
+    "port": 3000,
+    "dns_type": "CNAME",
+    "dns_target": "showers-theft-garcia-thumbnails.trycloudflare.com",
+    "status": "pending_dns",
+    "ssl_status": "ready_to_provision",
+    "verified": false,
+    "last_checked": "2026-11-16T09:35:21Z",
+    "dns_records": [
+      {
+        "type": "A",
+        "name": "jarvis",
+        "domain": "jarvis.tarikislam.in",
+        "apex": "tarikislam.in",
+        "content": "172.30.148.196",
+        "ttl": "Auto (60s - 300s)",
+        "proxied": true,
+        "purpose": "Points your domain directly to your VPS / Server IP for instant routing"
+      },
+      {
+        "type": "CNAME",
+        "name": "jarvis",
+        "domain": "jarvis.tarikislam.in",
+        "apex": "tarikislam.in",
+        "content": "showers-theft-garcia-thumbnails.trycloudflare.com",
+        "ttl": "Auto",
+        "proxied": true,
+        "purpose": "Routes domain via Cloudflare Tunnel / Public Edge endpoint without exposing your VPS IP"
+      }
+    ]
+  },
+  {
+    "id": "dom_20745",
+    "domain": "amazon.tarikislam.in",
+    "project": "amazon-intelligence-suite",
+    "project_id": "prj_amazon_intelligence_suite",
+    "server_name": "Primary VPS",
+    "server_ip": "172.30.148.196",
+    "port": 3000,
+    "dns_type": "CNAME",
+    "dns_target": "showers-theft-garcia-thumbnails.trycloudflare.com",
+    "status": "pending_dns",
+    "ssl_status": "ready_to_provision",
+    "verified": false,
+    "last_checked": "2026-11-16T09:31:17Z",
+    "dns_records": [
+      {
+        "type": "A",
+        "name": "amazon",
+        "domain": "amazon.tarikislam.in",
+        "apex": "tarikislam.in",
+        "content": "172.30.148.196",
+        "ttl": "Auto (60s - 300s)",
+        "proxied": true,
+        "purpose": "Points your domain directly to your VPS / Server IP for instant routing"
+      },
+      {
+        "type": "CNAME",
+        "name": "amazon",
+        "domain": "amazon.tarikislam.in",
+        "apex": "tarikislam.in",
+        "content": "showers-theft-garcia-thumbnails.trycloudflare.com",
+        "ttl": "Auto",
+        "proxied": true,
+        "purpose": "Routes domain via Cloudflare Tunnel / Public Edge endpoint without exposing your VPS IP"
+      }
+    ]
+  },
+  {
     "id": "dom_coolify_cf",
     "domain": "coolify.tarikislam.in",
     "project": "Coolify Fleet Control Plane",
@@ -23,33 +97,6 @@
         "ttl": "Auto",
         "proxied": true,
         "purpose": "Cloudflare Zero-Trust CNAME for 24/7 HTTPS routing to Coolify"
-      }
-    ]
-  },
-  {
-    "id": "dom_mark_lvi",
-    "domain": "jarvis.tarikislam.in",
-    "project": "mark-lvi",
-    "project_id": "prj_mark_lvi",
-    "server_name": "Primary VPS / Local Host",
-    "server_ip": "172.30.148.196",
-    "port": 8000,
-    "dns_type": "CNAME",
-    "dns_target": "showers-theft-garcia-thumbnails.trycloudflare.com",
-    "status": "pending_dns",
-    "ssl_status": "ready_to_provision",
-    "verified": false,
-    "last_checked": "2026-11-15T19:10:00Z",
-    "dns_records": [
-      {
-        "type": "CNAME",
-        "name": "jarvis",
-        "domain": "jarvis.tarikislam.in",
-        "apex": "tarikislam.in",
-        "content": "showers-theft-garcia-thumbnails.trycloudflare.com",
-        "ttl": "Auto",
-        "proxied": true,
-        "purpose": "Public CNAME routing to Mark-LVI (JARVIS) backend"
       }
     ]
   },

@@ -1,5 +1,37 @@
 [
   {
+    "id": "prj_mark_lvi",
+    "name": "mark-lvi",
+    "repo": "tarikk786786/mark-lvi",
+    "framework": "dockerfile",
+    "branch": "main",
+    "commit": "HEAD",
+    "commit_message": "1-Click Deploy via Vercel for VPS with domain jarvis.tarikislam.in",
+    "status": "ready",
+    "server_name": "Primary VPS",
+    "server_ip": "172.30.148.196",
+    "domain": "jarvis.tarikislam.in",
+    "production_url": "https://jarvis.tarikislam.in",
+    "created_at": "2026-11-16T09:35:22Z",
+    "coolify_uuid": "uk2pev1xzt96ywxf4uhs8bl8"
+  },
+  {
+    "id": "prj_amazon_intelligence_suite",
+    "name": "amazon-intelligence-suite",
+    "repo": "tarikk786786/amazon-intelligence-suite",
+    "framework": "dockerfile",
+    "branch": "main",
+    "commit": "HEAD",
+    "commit_message": "1-Click Deploy via Vercel for VPS with domain amazon.tarikislam.in",
+    "status": "ready",
+    "server_name": "Primary VPS",
+    "server_ip": "172.30.148.196",
+    "domain": "amazon.tarikislam.in",
+    "production_url": "https://amazon.tarikislam.in",
+    "created_at": "2026-11-16T09:31:18Z",
+    "coolify_uuid": "app_917813"
+  },
+  {
     "id": "prj_coolify_vps_fleet",
     "name": "coolify-vps-fleet",
     "repo": "tarikk786786/coolify-vps-fleet",
@@ -13,33 +45,5 @@
     "production_url": "http://192.0.2.10:6806",
     "created_at": "2026-11-15T23:07:39Z",
     "env_vars": {}
-  },
-  {
-    "id": "prj_mark_lvi",
-    "name": "mark-lvi",
-    "repo": "tarikk786786/mark-lvi",
-    "framework": "docker",
-    "branch": "main",
-    "commit": "dd4debb",
-    "commit_message": "Production container setup",
-    "status": "ready",
-    "server_name": "Oracle Cloud Free Tier",
-    "server_ip": "140.238.160.45",
-    "production_url": "http://140.238.160.45:8100",
-    "created_at": "2026-11-15T10:00:00Z"
-  },
-  {
-    "id": "prj_amazon_intelligence",
-    "name": "amazon-intelligence-suite",
-    "repo": "tarikk786786/amazon-intelligence-suite",
-    "framework": "python",
-    "branch": "main",
-    "commit": "a82f19c",
-    "commit_message": "Unified Amazon intelligence analytics",
-    "status": "ready",
-    "server_name": "Oracle Cloud Free Tier",
-    "server_ip": "140.238.160.45",
-    "production_url": "http://140.238.160.45:8800",
-    "created_at": "2026-11-15T07:00:00Z"
   }
 ]

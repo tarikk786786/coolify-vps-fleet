@@ -416,8 +416,8 @@
 
       <div class="flex items-center justify-end gap-3 pt-3 border-t border-vercel-border">
         <button onclick="closeImportModal()" class="vercel-btn-secondary text-xs px-4 py-2 rounded-md">Cancel</button>
-        <button onclick="executeDeploy()" id="deploy-submit-btn" class="vercel-btn text-xs px-5 py-2 rounded-md flex items-center gap-1.5">
-          Deploy
+        <button onclick="executeDeploy()" id="deploy-submit-btn" class="vercel-btn text-xs px-5 py-2 rounded-md flex items-center gap-1.5 font-medium">
+          🚀 1-Click Deploy with Domain
         </button>
       </div>
     </div>
@@ -722,10 +722,15 @@
             </div>
 
             <div class="pt-2 flex items-center justify-between">
-              <a href="${url}" target="_blank" class="vercel-btn-secondary text-xs px-3 py-1.5 rounded-md flex items-center gap-1">
-                <span>Visit</span>
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-              </a>
+              <div class="flex items-center gap-2">
+                <a href="${url}" target="_blank" class="vercel-btn-secondary text-xs px-3 py-1.5 rounded-md flex items-center gap-1">
+                  <span>Visit</span>
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+                <button onclick="promptConnectDomain('${p.name}')" class="vercel-btn text-xs px-2.5 py-1.5 rounded-md text-[11px] flex items-center gap-1">
+                  <span>🌐 Connect Domain</span>
+                </button>
+              </div>
               <button onclick="deleteProject('${p.name}')" class="text-xs text-neutral-500 hover:text-red-400 transition">Delete</button>
             </div>
           </div>
@@ -912,6 +917,14 @@
       document.getElementById('modal-add-domain').classList.add('hidden');
     }
 
+    function promptConnectDomain(projectName) {
+      openAddDomainModal();
+      const sel = document.getElementById('domain-project-select');
+      if (sel) sel.value = projectName;
+      const inp = document.getElementById('domain-input');
+      if (inp) inp.value = `${projectName}.tarikislam.in`;
+    }
+
     function populateDomainProjectSelect() {
       const sel = document.getElementById('domain-project-select');
       sel.innerHTML = `<option value="Coolify Fleet Control Plane">Coolify Fleet Control Plane</option>` +
@@ -1064,8 +1077,8 @@
       const domain = document.getElementById('import-project-domain').value.trim();
       const framework = document.getElementById('import-framework').value;
       const serverSel = document.getElementById('import-server');
-      const serverIp = serverSel.value;
-      const serverName = serverSel.options[serverSel.selectedIndex]?.dataset.name || 'Primary VPS';
+      const serverIp = serverSel ? serverSel.value : '172.30.148.196';
+      const serverName = (serverSel && serverSel.options[serverSel.selectedIndex]?.dataset.name) || 'Primary VPS';
 
       if (!repo || !name) {
         alert('Please select a repository and project name.');
@@ -1073,10 +1086,16 @@
       }
 
       btn.disabled = true;
-      btn.textContent = 'Deploying...';
+      btn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-1.5 h-3.5 w-3.5 text-black inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Deploying & Connecting Domain...</span>
+      `;
 
       try {
-        const res = await fetch('/api/projects/deploy', {
+        const res = await fetch('/api/deploy/one-click', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
@@ -1091,12 +1110,22 @@
         const data = await res.json();
         closeImportModal();
         await Promise.all([loadProjects(), loadDeployments(), loadDomains()]);
+        
+        // Show DNS instructions immediately if custom domain configured
+        if (data.dns_records && data.dns_records.length > 0) {
+          showDnsRecords({
+            domain: data.domain,
+            dns_type: data.dns_records[0].type,
+            dns_target: data.dns_records[0].content,
+            dns_records: data.dns_records
+          });
+        }
         switchTab('overview');
       } catch (e) {
         alert('Deployment error: ' + e);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Deploy';
+        btn.innerHTML = '🚀 1-Click Deploy with Domain';
       }
     }
 
